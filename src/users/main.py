@@ -26,6 +26,9 @@ class User():
         self.cons           = int(arr[6]);
         self.expiry         = arr[7];
         self.rank           = arr[8];
+
+    def validate_attack_time(self, time: int) -> bool:
+        pass
     
     def validateAttackCon(self):
         pass
