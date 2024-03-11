@@ -56,11 +56,15 @@ class BootaNet():
 
         client.send("Password: ".encode())
         password = client.recv(self.BUF_SZ)
+        if password == "":
+            password = client.recv(self.BUF_SZ)
 
         # Validate Login
 
         new_client = Client(username, client)
         self.clients.append(new_client)
+        
+        self.user_handler(new_client)
 
     def user_handler(self, client: Client) -> None:
         while(True):

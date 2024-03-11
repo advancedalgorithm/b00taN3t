@@ -6,4 +6,5 @@ class Client():
         ## TODO: STORE USER CLASS INTO AN OBJECT
         self.username = username;
         self.socket = socket;
+        print(f"{type(socket)}")
         
