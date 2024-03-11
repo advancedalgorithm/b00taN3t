@@ -1,6 +1,7 @@
-
+import os
 
 class User():
+    idx:                    int;
     name:                   str;
     ip:                     str;
     pw:                     str;

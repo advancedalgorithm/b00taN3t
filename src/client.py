@@ -1,4 +1,4 @@
-from .user import *
+from .users.main import User
 
 class Client():
     info:       User;
