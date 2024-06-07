@@ -51,36 +51,37 @@ class BootaNet():
 
 
     def server_authorization(self, client) -> None:
-        client.send("\xFF\xFB\x01\xFF\xFB\x03\xFF\xFC\x22".encode())
-        client.send("[?1000;1003;1006;1015h\r\n".encode())
-        client.send("Username: ".encode())
-        username = client.recv(self.BUF_SZ)
-        print(f"{username}")
+        try:
+            client.send("Username: ".encode())
+            username = client.recv(self.BUF_SZ)
+            print(f"{username}")
 
-        client.send("Password: ".encode())
-        password = client.recv(self.BUF_SZ).decode().strip()
-        if password == "":
+            client.send("Password: ".encode())
             password = client.recv(self.BUF_SZ).decode().strip()
+            if password == "":
+                password = client.recv(self.BUF_SZ).decode().strip()
 
-        # Validate Login
+            # Validate Login
 
-        new_client = Client(username, client)
-        self.clients.append(new_client)
-        self.user_handler(new_client)
+            new_client = Client(username, client)
+            self.clients.append(new_client)
+            self.user_handler(new_client)
+        except: return
 
     def user_handler(self, client: Client) -> None:
-        while(True):
-            client.socket.send("[root@b00tab0t]# [~] ".encode())
-            r_data = client.socket.recv(2)
-            data = r_data.decode().strip()
+        try:
+            while(True):
+                client.socket.send("[root@b00tab0t]# [~] ".encode())
+                data = client.socket.recv(1024).decode().strip()
 
-            if len(data) <= 1: 
-                client.socket.send("\r".encode())
-                continue;
+                if len(data) <= 1: 
+                    client.socket.send("\r".encode())
+                    continue;
 
-            if data.startswith("help"):
-                client.socket.send("Test\r\n".encode())
-            else:
-                client.socket.send("[ X ] Error Invalid Command\r\n".encode())
+                if data.startswith("help"):
+                    client.socket.send("Test\r\n".encode())
+                else:
+                    client.socket.send("[ X ] Error Invalid Command\r\n".encode())
+        except: return
 
-            print(f"{r_data} | {data}")
+        print(f"{data}")
